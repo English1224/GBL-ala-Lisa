@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Falcon Brain Quest</title>
+<style>
+  :root{
+    --bg:#10131a;
+    --panel:#1b2230;
+    --panel2:#252f42;
+    --text:#f5f7fb;
+    --muted:#b9c3d6;
+    --accent:#d62828;
+    --accent2:#ef4444;
+    --good:#22c55e;
+    --warn:#f59e0b;
+    --line:#3a465d;
+    --shadow:0 12px 28px rgba(0,0,0,.28);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:Arial, Helvetica, sans-serif;
+    background:linear-gradient(160deg,#0f1218,#171d29 55%,#10131a);
+    color:var(--text);
+    min-height:100vh;
+  }
+  .app{
+    width:min(920px,94vw);
+    margin:0 auto;
+    padding:24px 0 48px;
+  }
+  .topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-bottom:16px;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-weight:800;
+    letter-spacing:.4px;
+  }
+  .falcon-mark{
+    width:44px;height:44px;border-radius:10px;
+    background:var(--accent);
+    display:grid;place-items:center;
+    font-size:23px;
+    box-shadow:var(--shadow);
+  }
+  .teacher-btn{
+    border:1px solid var(--line);
+    background:#151b27;
+    color:var(--text);
+    padding:10px 14px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:700;
+  }
+  .card{
+    background:rgba(27,34,48,.97);
+    border:1px solid var(--line);
+    border-radius:18px;
+    box-shadow:var(--shadow);
+    padding:clamp(20px,4vw,38px);
+  }
+  h1,h2,h3{margin-top:0}
+  h1{font-size:clamp(30px,5vw,48px);line-height:1.05}
+  h2{font-size:clamp(24px,4vw,34px)}
+  p{font-size:clamp(18px,2.4vw,22px);line-height:1.5;color:var(--muted)}
+  .accent{color:#ff6b6b}
+  .center{text-align:center}
+  .big-input{
+    width:100%;
+    padding:18px 20px;
+    font-size:22px;
+    border-radius:12px;
+    border:2px solid var(--line);
+    background:#111722;
+    color:var(--text);
+    margin:14px 0 20px;
+  }
+  .btn{
+    width:100%;
+    min-height:64px;
+    border:none;
+    border-radius:14px;
+    padding:16px 18px;
+    font-size:20px;
+    font-weight:800;
+    cursor:pointer;
+    transition:transform .08s ease, filter .15s ease;
+  }
+  .btn:hover{filter:brightness(1.05)}
+  .btn:active{transform:scale(.99)}
+  .btn-primary{background:var(--accent);color:white}
+  .btn-secondary{background:#2d374a;color:white;border:1px solid #46536d}
+  .btn-good{background:#176a36;color:white}
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:14px;
+  }
+  .choice-grid{display:grid;gap:14px;margin-top:20px}
+  .choice{
+    text-align:left;
+    background:#222b3d;
+    color:var(--text);
+    border:2px solid #3d4960;
+  }
+  .choice:hover{border-color:#657592}
+  .skill-box{
+    background:#151b27;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:16px;
+  }
+  .skill-box h3{margin-bottom:8px;font-size:20px}
+  .skill-box p{font-size:16px;margin:0}
+  .progress-wrap{margin:4px 0 18px}
+  .progress-label{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin-bottom:8px}
+  .progress{height:10px;background:#0d1118;border-radius:99px;overflow:hidden;border:1px solid #30394a}
+  .progress > div{height:100%;background:var(--accent);width:0}
+  .scenario-tag{font-size:14px;text-transform:uppercase;letter-spacing:.08em;color:#ff8f8f;font-weight:800}
+  .feedback{
+    margin-top:22px;
+    border-radius:14px;
+    padding:18px;
+    background:#141a24;
+    border:1px solid var(--line);
+  }
+  .feedback.good{border-color:#2c7b49;background:#14231a}
+  .feedback.retry{border-color:#8c6b22;background:#27210f}
+  .feedback p{margin-bottom:12px}
+  .points-badge{display:inline-block;padding:7px 10px;border-radius:999px;background:#123e22;color:#bdf7ca;font-weight:800;margin-right:8px;margin-bottom:6px}
+  .score-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:20px 0}
+  .score-card{background:#151b27;border:1px solid var(--line);border-radius:14px;padding:18px}
+  .score-card strong{font-size:28px;display:block;margin-top:5px}
+  .level{
+    display:inline-block;
+    background:var(--accent);
+    color:white;
+    border-radius:999px;
+    padding:10px 16px;
+    font-weight:800;
+    margin:8px 0 16px;
+  }
+  .small{font-size:14px;color:var(--muted)}
+  .teacher-panel{display:grid;gap:12px}
+  .teacher-row{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid var(--line);padding:10px 0;font-size:17px}
+  .retry-list{background:#151b27;border:1px solid var(--line);border-radius:12px;padding:14px 18px}
+  .retry-list ul{margin:8px 0 0;padding-left:22px}
+  .track-table{width:100%;border-collapse:collapse;margin-top:10px}
+  .track-table th,.track-table td{border-bottom:1px solid var(--line);padding:10px;text-align:left}
+  .toggle-wrap{display:grid;gap:10px;margin:14px 0}
+  .toggle{display:flex;align-items:center;gap:10px;background:#151b27;border:1px solid var(--line);padding:12px;border-radius:10px}
+  .button-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+  .hidden{display:none !important}
+  @media(max-width:640px){
+    .grid,.score-grid,.button-row{grid-template-columns:1fr}
+    .topbar{align-items:flex-start}
+    .teacher-btn{font-size:13px}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="brand"><div class="falcon-mark">🦅</div><div>Falcon Brain Quest</div></div>
+    <button class="teacher-btn" id="teacherOpenBtn">Teacher View</button>
+  </div>
+  <main id="screen" class="card"></main>
+</div>
+
+<script>
+/* ============================================================
+   FALCON BRAIN QUEST — EASY-TO-EDIT TEACHER SECTION
+   ------------------------------------------------------------
+   You can edit:
+   - skill descriptions
+   - scenario wording
+   - answer choices
+   - point values
+   - consequences/feedback
+   - IEP tracking tags
+   ============================================================ */
+
+const GAME = {
+  title: "Falcon Brain Quest",
+  skills: {
+    regulation: {
+      label: "Regulation",
+      description: "Notice what your body and brain need so you can stay safe and ready to learn."
+    },
+    communication: {
+      label: "Communication",
+      description: "Use clear, respectful words to tell people what you need."
+    },
+    independence: {
+      label: "Independence",
+      description: "Try useful steps on your own and make responsible choices."
+    },
+    problemSolving: {
+      label: "Problem Solving",
+      description: "Think through a problem and choose a step that can improve the situation."
+    }
+  },
+
+  achievementLevels: [
+    { min: 0,  label: "Learning Falcon" },
+    { min: 8,  label: "Skilled Falcon" },
+    { min: 14, label: "Falcon Problem Solver" },
+    { min: 19, label: "Falcon Brain Master" }
+  ],
+
+  trackingOptions: [
+    { key:"askedBreak", label:"Asked for a break" },
+    { key:"askedHelp", label:"Asked for help" },
+    { key:"appropriateCommunication", label:"Used appropriate communication" },
+    { key:"safeResponse", label:"Selected a safe response" },
+    { key:"createdSpace", label:"Chose to walk away/create space" }
+  ],
+
+  scenarios: [
+    {
+      id:1,
+      title:"Schoolwork feels frustrating",
+      text:"You have worked on an assignment for a while. You feel stuck and your frustration is getting stronger. What is the best next step?",
+      choices:[
+        { text:"Ask for help or ask for a short break.", appropriate:true, points:{regulation:1,communication:1}, feedback:"Good choice. Asking for help or a break can lower frustration and help you return ready to work.", tags:["askedBreak","askedHelp","appropriateCommunication","safeResponse"] },
+        { text:"Shove the Chromebook away and yell.", appropriate:false, feedback:"Yelling or pushing things may make the situation harder and can create a safety problem. Try a choice that helps you get support or space." },
+        { text:"Refuse to talk to anyone for the rest of class.", appropriate:false, feedback:"Taking space can help, but shutting down for the whole class may keep the problem from getting solved. Try a step that communicates what you need." },
+        { text:"Keep guessing even though you do not understand.", appropriate:false, feedback:"Trying is useful, but guessing again and again may increase frustration. A better step is to ask for help or clarification." }
+      ]
+    },
+    {
+      id:2,
+      title:"You need a break",
+      text:"You notice your body getting tense and your thoughts are speeding up. You think a break would help. What should you do?",
+      choices:[
+        { text:"Say, “I need a short break. Can I take one?”", appropriate:true, points:{regulation:1,communication:1}, feedback:"Strong self-advocacy. You noticed what you needed and asked in a respectful way.", tags:["askedBreak","appropriateCommunication","safeResponse"] },
+        { text:"Leave the room without saying anything.", appropriate:false, feedback:"Getting space may help, but leaving without telling staff can create a safety concern. Ask for the break first." },
+        { text:"Wait until you are extremely upset.", appropriate:false, feedback:"Waiting can make regulation harder. Asking early is often more effective." },
+        { text:"Start bothering another student instead.", appropriate:false, feedback:"That may spread your stress to someone else. Choose a response that directly meets your need for a break." }
+      ]
+    },
+    {
+      id:3,
+      title:"An adult corrects you",
+      text:"An adult tells you that you need to fix part of your work. You feel annoyed. What is the most useful response?",
+      choices:[
+        { text:"Say, “Okay. Can you show me what needs to change?”", appropriate:true, points:{communication:1,problemSolving:1}, feedback:"This keeps the conversation respectful and helps you get the information you need.", tags:["askedHelp","appropriateCommunication","safeResponse"] },
+        { text:"Argue loudly about why the adult is wrong.", appropriate:false, feedback:"Arguing loudly can turn a small correction into a bigger conflict. Try asking a question or getting clarification instead." },
+        { text:"Throw the paper away.", appropriate:false, feedback:"That may remove your chance to fix the work and can create another problem. Choose a response that helps you move forward." },
+        { text:"Ignore the adult and keep doing the same thing.", appropriate:false, feedback:"Ignoring the correction may mean the problem continues. Ask what needs to be changed." }
+      ]
+    },
+    {
+      id:4,
+      title:"Another student is annoying you",
+      text:"Another student is making noises that are bothering you. You are getting irritated. What is a safe, effective choice?",
+      choices:[
+        { text:"Create space and tell staff you are having trouble focusing.", appropriate:true, points:{regulation:1,communication:1}, feedback:"Good choice. Creating space can lower stress, and telling staff gives them a chance to help.", tags:["appropriateCommunication","safeResponse","createdSpace"] },
+        { text:"Insult the student until they stop.", appropriate:false, feedback:"Insults may increase the conflict. Try creating space or asking for help instead." },
+        { text:"Push the student’s chair.", appropriate:false, feedback:"Physical contact can become unsafe very quickly. Choose a response that creates distance instead." },
+        { text:"Keep building up anger without doing anything.", appropriate:false, feedback:"Holding in frustration may make it harder to stay in control. Take a safe action before it grows." }
+      ]
+    },
+    {
+      id:5,
+      title:"Accidental physical contact",
+      text:"A student accidentally bumps your shoulder while walking past you. What is the best response?",
+      choices:[
+        { text:"Pause, check what happened, and move on if it was an accident.", appropriate:true, points:{regulation:1,problemSolving:1}, feedback:"That response gives you time to understand the situation before reacting. It keeps everyone safer.", tags:["safeResponse"] },
+        { text:"Push them back right away.", appropriate:false, feedback:"Pushing can turn an accident into a real conflict. Pause and check what happened first." },
+        { text:"Threaten them so it does not happen again.", appropriate:false, feedback:"Threats can make the situation unsafe. If you are unsure what happened, use calm words or ask staff for help." },
+        { text:"Assume they did it on purpose.", appropriate:false, feedback:"Assuming intent can increase anger. A quick pause can help you decide what actually happened." }
+      ]
+    },
+    {
+      id:6,
+      title:"You want YouTube during work time",
+      text:"You want to watch YouTube, but it is work time. What is the most responsible choice?",
+      choices:[
+        { text:"Finish the assigned step and ask when YouTube is allowed.", appropriate:true, points:{independence:2}, feedback:"This shows independence. You are handling the work expectation first and checking when the preferred activity is available.", tags:["appropriateCommunication","safeResponse"] },
+        { text:"Open YouTube in another tab and hide it.", appropriate:false, feedback:"Hiding it may lead to lost trust and less independence later. A better choice is to finish the expected work and ask." },
+        { text:"Refuse to work unless YouTube is allowed.", appropriate:false, feedback:"That can make it harder to complete your goals. Try completing one step, then ask when YouTube can be used." },
+        { text:"Argue that everyone else gets to use it.", appropriate:false, feedback:"Comparing yourself to others may not solve the problem. Focus on the expectation for you and ask what you need to do first." }
+      ]
+    },
+    {
+      id:7,
+      title:"You do not understand the assignment",
+      text:"The directions do not make sense to you. What should you do first?",
+      choices:[
+        { text:"Ask the teacher to explain the first step in a different way.", appropriate:true, points:{communication:1,problemSolving:1}, feedback:"Excellent self-advocacy. You are asking for the exact help needed to get started.", tags:["askedHelp","appropriateCommunication","safeResponse"] },
+        { text:"Copy someone else’s work.", appropriate:false, feedback:"Copying may hide the problem instead of solving it. Asking for clarification helps you learn what to do." },
+        { text:"Sit there and hope the class ends.", appropriate:false, feedback:"Waiting may leave you stuck. A small question can help you move forward." },
+        { text:"Say the assignment is stupid and refuse.", appropriate:false, feedback:"That may increase conflict without solving the confusion. Try asking for the first step or an example." }
+      ]
+    },
+    {
+      id:8,
+      title:"You feel physically restless",
+      text:"You are having trouble sitting still and focusing. What is a useful next step?",
+      choices:[
+        { text:"Ask to stand, stretch, walk, or use an approved movement option.", appropriate:true, points:{regulation:1,independence:1}, feedback:"Great regulation choice. Movement can help your body reset while keeping you safe and ready to return.", tags:["askedBreak","appropriateCommunication","safeResponse","createdSpace"] },
+        { text:"Tip your chair back and rock hard.", appropriate:false, feedback:"That may be unsafe and may not give your body the movement it actually needs. Ask for an approved movement option." },
+        { text:"Walk around touching other people’s things.", appropriate:false, feedback:"Moving can help, but touching other people’s things may create conflict. Choose a movement option that respects space." },
+        { text:"Leave your work area without telling anyone.", appropriate:false, feedback:"Movement may help, but staff need to know what you are doing. Ask first or use an approved routine." }
+      ]
+    },
+    {
+      id:9,
+      title:"Someone else is using what you want",
+      text:"Another student is using a game, tool, or item that you want. What is the best response?",
+      choices:[
+        { text:"Ask when they will be done and choose something else while you wait.", appropriate:true, points:{communication:1,independence:1}, feedback:"That shows patience, communication, and independence. You can keep yourself busy while you wait.", tags:["appropriateCommunication","safeResponse"] },
+        { text:"Take the item from them.", appropriate:false, feedback:"Taking it may start a conflict. Ask when it will be available and choose another option while you wait." },
+        { text:"Stand next to them and complain until they give it up.", appropriate:false, feedback:"Pressure can annoy the other person and create conflict. Try asking once, then move to another activity." },
+        { text:"Tell them they are not allowed to use it anymore.", appropriate:false, feedback:"Unless you are the person in charge, that may not be your decision. Ask appropriately and wait for your turn." }
+      ]
+    },
+    {
+      id:10,
+      title:"Chromebook or technology problem",
+      text:"Your Chromebook freezes and your assignment will not load. What is the best first response?",
+      choices:[
+        { text:"Try a simple fix, then ask for help if the problem continues.", appropriate:true, points:{independence:1,problemSolving:1}, feedback:"Strong problem solving. You can try a basic step like refresh or restart, then ask for help if needed.", tags:["askedHelp","safeResponse"] },
+        { text:"Hit the Chromebook because it is not working.", appropriate:false, feedback:"Hitting the device can damage it and does not fix the problem. Try a safe troubleshooting step instead." },
+        { text:"Give up on the assignment for the day.", appropriate:false, feedback:"Technology problems are frustrating, but they can often be fixed. Try one safe step and then ask for help." },
+        { text:"Blame someone else for breaking it.", appropriate:false, feedback:"Blaming does not solve the technology problem. Focus on the next useful step." }
+      ]
+    }
+  ],
+
+  finalChallenge: {
+    title:"Falcon Brain Challenge",
+    intro:"You are working on a difficult assignment. The Chromebook freezes. Another student is making noise nearby. You feel frustrated and restless. Choose the best steps in order.",
+    steps:[
+      {
+        question:"Step 1: What should you do first?",
+        choices:[
+          { text:"Pause, notice your frustration, and choose a safe regulation step.", appropriate:true, points:{regulation:1}, feedback:"Good start. Regulation comes first because it helps your brain make a better next decision.", tags:["safeResponse"] },
+          { text:"Yell at the other student.", appropriate:false, feedback:"That may increase the conflict. Start with a step that helps you get regulated first." },
+          { text:"Hit the Chromebook.", appropriate:false, feedback:"That can damage the device. Start by getting regulated so you can problem-solve safely." },
+          { text:"Leave without telling anyone.", appropriate:false, feedback:"Space can help, but leaving without communicating can create a safety concern. Start with a safe regulation step." }
+        ]
+      },
+      {
+        question:"Step 2: You are calmer. What next?",
+        choices:[
+          { text:"Try one safe technology fix, such as refresh or restart.", appropriate:true, points:{problemSolving:1,independence:1}, feedback:"Nice problem solving. You tried a reasonable step before giving up.", tags:["safeResponse"] },
+          { text:"Keep clicking random things quickly.", appropriate:false, feedback:"Random clicking can make the problem harder to understand. Try one clear troubleshooting step." },
+          { text:"Throw the assignment away.", appropriate:false, feedback:"That avoids the problem instead of solving it. Try a simple technology fix first." },
+          { text:"Take another student’s Chromebook.", appropriate:false, feedback:"That may create a new conflict. Try a safe troubleshooting step with your own device." }
+        ]
+      },
+      {
+        question:"Step 3: The Chromebook still does not work. What should you do?",
+        choices:[
+          { text:"Tell the teacher what you tried and ask for help.", appropriate:true, points:{communication:1,problemSolving:1}, feedback:"Excellent. You explain what happened, show what you already tried, and ask for the next step.", tags:["askedHelp","appropriateCommunication","safeResponse"] },
+          { text:"Say, “I’m done,” and refuse everything.", appropriate:false, feedback:"That may stop progress. Asking for help gives you another path forward." },
+          { text:"Start arguing about the noisy student instead.", appropriate:false, feedback:"That changes the subject without fixing your device. Ask for help with the Chromebook first." },
+          { text:"Wait silently for someone to notice.", appropriate:false, feedback:"Someone may not know you need help. Use clear words to explain the problem." }
+        ]
+      }
+    ]
+  }
+};
+
+/* ================= END TEACHER EDIT SECTION ================= */
+
+const state = {
+  name:"",
+  scenarioIndex:0,
+  currentRetries:0,
+  firstAttemptCorrect:0,
+  retryScenarioIds:[],
+  completed:0,
+  scores:{regulation:0,communication:0,independence:0,problemSolving:0},
+  trackEnabled:true,
+  trackCounts:{askedBreak:0,askedHelp:0,appropriateCommunication:0,safeResponse:0,createdSpace:0},
+  challengeStep:0,
+  challengeRetries:0,
+  inChallenge:false
+};
+
+const screen = document.getElementById('screen');
+const teacherOpenBtn = document.getElementById('teacherOpenBtn');
+
+function esc(s){
+  return String(s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+}
+
+function renderWelcome(){
+  screen.innerHTML = `
+    <div class="center">
+      <div class="scenario-tag">High School Skills Game</div>
+      <h1>Falcon <span class="accent">Brain Quest</span></h1>
+      <p>Practice real-life school choices for regulation, communication, independence, and problem solving.</p>
+      <p class="small">No timer. Unlimited retries. Your goal is to practice useful choices.</p>
+      <button class="btn btn-primary" id="startBtn">Start Quest</button>
+    </div>`;
+  document.getElementById('startBtn').onclick = renderName;
+}
+
+function renderName(){
+  screen.innerHTML = `
+    <h2>What should we call you?</h2>
+    <p>Enter your first name or nickname.</p>
+    <input id="nameInput" class="big-input" maxlength="20" placeholder="First name or nickname" autocomplete="off" />
+    <button class="btn btn-primary" id="continueBtn">Continue</button>`;
+  const input = document.getElementById('nameInput');
+  input.focus();
+  document.getElementById('continueBtn').onclick = () => {
+    const value = input.value.trim();
+    state.name = value || "Student";
+    renderSkills();
+  };
+}
+
+function renderSkills(){
+  const boxes = Object.values(GAME.skills).map(skill => `
+    <div class="skill-box"><h3>${esc(skill.label)}</h3><p>${esc(skill.description)}</p></div>`).join('');
+  screen.innerHTML = `
+    <h2>Your 4 Falcon Skills</h2>
+    <p>You will earn points when your choice helps the situation.</p>
+    <div class="grid">${boxes}</div>
+    <button class="btn btn-primary" id="beginScenarios" style="margin-top:20px">Begin Scenarios</button>`;
+  document.getElementById('beginScenarios').onclick = () => {
+    state.scenarioIndex = 0;
+    renderScenario();
+  };
+}
+
+function getCurrentItem(){
+  if(state.inChallenge) return GAME.finalChallenge.steps[state.challengeStep];
+  return GAME.scenarios[state.scenarioIndex];
+}
+
+function renderScenario(){
+  state.currentRetries = 0;
+  state.inChallenge = false;
+  const s = GAME.scenarios[state.scenarioIndex];
+  const pct = Math.round((state.scenarioIndex/GAME.scenarios.length)*100);
+  screen.innerHTML = `
+    <div class="progress-wrap">
+      <div class="progress-label"><span>Scenario ${state.scenarioIndex+1} of ${GAME.scenarios.length}</span><span>${pct}%</span></div>
+      <div class="progress"><div style="width:${pct}%"></div></div>
+    </div>
+    <div class="scenario-tag">${esc(s.title)}</div>
+    <h2>${esc(s.text)}</h2>
+    <div class="choice-grid" id="choices"></div>
+    <div id="feedback"></div>`;
+  renderChoices(s.choices, handleScenarioChoice);
+}
+
+function renderChoices(choices, handler){
+  const wrap = document.getElementById('choices');
+  wrap.innerHTML = '';
+  choices.forEach((choice,i) => {
+    const b = document.createElement('button');
+    b.className = 'btn choice';
+    b.textContent = choice.text;
+    b.onclick = () => handler(choice, i);
+    wrap.appendChild(b);
+  });
+}
+
+function applyPoints(points={}){
+  Object.entries(points).forEach(([k,v]) => { state.scores[k] += v; });
+}
+
+function applyTags(tags=[]){
+  if(!state.trackEnabled) return;
+  tags.forEach(tag => {
+    if(tag in state.trackCounts) state.trackCounts[tag]++;
+  });
+}
+
+function pointsText(points={}){
+  return Object.entries(points).map(([k,v]) => `<span class="points-badge">+${v} ${esc(GAME.skills[k].label)}</span>`).join('');
+}
+
+function handleScenarioChoice(choice){
+  const feedback = document.getElementById('feedback');
+  if(choice.appropriate){
+    applyPoints(choice.points);
+    applyTags(choice.tags);
+    if(state.currentRetries === 0) state.firstAttemptCorrect++;
+    else if(!state.retryScenarioIds.includes(GAME.scenarios[state.scenarioIndex].id)) state.retryScenarioIds.push(GAME.scenarios[state.scenarioIndex].id);
+    state.completed++;
+    document.querySelectorAll('#choices button').forEach(b => b.disabled = true);
+    feedback.innerHTML = `<div class="feedback good"><h3>Useful choice</h3><p>${esc(choice.feedback)}</p>${pointsText(choice.points)}<button class="btn btn-good" id="nextBtn" style="margin-top:12px">Next</button></div>`;
+    document.getElementById('nextBtn').onclick = () => {
+      if(state.scenarioIndex < GAME.scenarios.length - 1){
+        state.scenarioIndex++;
+        renderScenario();
+      }else{
+        renderChallengeIntro();
+      }
+    };
+  } else {
+    state.currentRetries++;
+    feedback.innerHTML = `<div class="feedback retry"><h3>Try another choice</h3><p>${esc(choice.feedback)}</p><p class="small">You can retry as many times as you need.</p></div>`;
+  }
+}
+
+function renderChallengeIntro(){
+  state.inChallenge = true;
+  state.challengeStep = 0;
+  state.challengeRetries = 0;
+  screen.innerHTML = `
+    <div class="scenario-tag">Final Challenge</div>
+    <h1>${esc(GAME.finalChallenge.title)}</h1>
+    <p>${esc(GAME.finalChallenge.intro)}</p>
+    <button class="btn btn-primary" id="challengeStart">Start Challenge</button>`;
+  document.getElementById('challengeStart').onclick = renderChallengeStep;
+}
+
+function renderChallengeStep(){
+  state.inChallenge = true;
+  state.currentRetries = 0;
+  const step = GAME.finalChallenge.steps[state.challengeStep];
+  screen.innerHTML = `
+    <div class="progress-wrap">
+      <div class="progress-label"><span>Falcon Brain Challenge</span><span>Step ${state.challengeStep+1} of ${GAME.finalChallenge.steps.length}</span></div>
+      <div class="progress"><div style="width:${((state.challengeStep+1)/GAME.finalChallenge.steps.length)*100}%"></div></div>
+    </div>
+    <h2>${esc(step.question)}</h2>
+    <div class="choice-grid" id="choices"></div>
+    <div id="feedback"></div>`;
+  renderChoices(step.choices, handleChallengeChoice);
+}
+
+function handleChallengeChoice(choice){
+  const feedback = document.getElementById('feedback');
+  if(choice.appropriate){
+    applyPoints(choice.points);
+    applyTags(choice.tags);
+    document.querySelectorAll('#choices button').forEach(b => b.disabled = true);
+    feedback.innerHTML = `<div class="feedback good"><h3>Useful choice</h3><p>${esc(choice.feedback)}</p>${pointsText(choice.points)}<button class="btn btn-good" id="nextChallenge" style="margin-top:12px">Continue</button></div>`;
+    document.getElementById('nextChallenge').onclick = () => {
+      if(state.challengeStep < GAME.finalChallenge.steps.length - 1){
+        state.challengeStep++;
+        renderChallengeStep();
+      }else{
+        renderResults();
+      }
+    };
+  } else {
+    state.currentRetries++;
+    state.challengeRetries++;
+    feedback.innerHTML = `<div class="feedback retry"><h3>Try another choice</h3><p>${esc(choice.feedback)}</p><p class="small">The challenge lets you retry without losing points.</p></div>`;
+  }
+}
+
+function totalPoints(){return Object.values(state.scores).reduce((a,b)=>a+b,0)}
+function strongestSkill(){
+  return Object.entries(state.scores).sort((a,b)=>b[1]-a[1])[0][0];
+}
+function practiceSkill(){
+  return Object.entries(state.scores).sort((a,b)=>a[1]-b[1])[0][0];
+}
+function achievement(){
+  const total = totalPoints();
+  return GAME.achievementLevels.filter(x => total >= x.min).slice(-1)[0].label;
+}
+
+function renderResults(){
+  const strong = strongestSkill();
+  const practice = practiceSkill();
+  screen.innerHTML = `
+    <div class="center">
+      <div class="scenario-tag">Quest Complete</div>
+      <h1>Great work, ${esc(state.name)}.</h1>
+      <div class="level">${esc(achievement())}</div>
+      <p>You practiced making safe, useful choices in real school situations.</p>
+    </div>
+    <div class="score-grid">
+      ${scoreCard('Regulation',state.scores.regulation)}
+      ${scoreCard('Communication',state.scores.communication)}
+      ${scoreCard('Independence',state.scores.independence)}
+      ${scoreCard('Problem Solving',state.scores.problemSolving)}
+    </div>
+    <div class="skill-box"><h3>Total Points: ${totalPoints()}</h3><p><strong>Strongest skill:</strong> ${esc(GAME.skills[strong].label)}<br><strong>Skill to practice:</strong> ${esc(GAME.skills[practice].label)}</p></div>
+    <div class="button-row">
+      <button class="btn btn-primary" id="teacherSummaryBtn">Teacher Summary</button>
+      <button class="btn btn-secondary" id="restartBtn">Play Again</button>
+    </div>`;
+  document.getElementById('teacherSummaryBtn').onclick = renderTeacherSummary;
+  document.getElementById('restartBtn').onclick = resetGame;
+}
+
+function scoreCard(label,score){
+  return `<div class="score-card"><span>${esc(label)}</span><strong>${score}</strong></div>`;
+}
+
+function renderTeacherSummary(){
+  const retryTitles = state.retryScenarioIds.map(id => GAME.scenarios.find(s=>s.id===id)?.title).filter(Boolean);
+  const trackedRows = GAME.trackingOptions.map(t => `<tr><td>${esc(t.label)}</td><td>${state.trackCounts[t.key]}</td></tr>`).join('');
+  screen.innerHTML = `
+    <div class="scenario-tag">Teacher Summary</div>
+    <h2>${esc(state.name)}</h2>
+    <div class="teacher-panel">
+      <div class="teacher-row"><span>Scenarios completed</span><strong>${state.completed} / ${GAME.scenarios.length}</strong></div>
+      <div class="teacher-row"><span>Appropriate on first attempt</span><strong>${state.firstAttemptCorrect}</strong></div>
+      <div class="teacher-row"><span>Scenarios requiring retry</span><strong>${state.retryScenarioIds.length}</strong></div>
+      <div class="teacher-row"><span>Regulation Points</span><strong>${state.scores.regulation}</strong></div>
+      <div class="teacher-row"><span>Communication Points</span><strong>${state.scores.communication}</strong></div>
+      <div class="teacher-row"><span>Independence Points</span><strong>${state.scores.independence}</strong></div>
+      <div class="teacher-row"><span>Problem-Solving Points</span><strong>${state.scores.problemSolving}</strong></div>
+      <div class="teacher-row"><span>Total Points</span><strong>${totalPoints()}</strong></div>
+    </div>
+    <h3 style="margin-top:24px">Scenarios that required retries</h3>
+    <div class="retry-list">${retryTitles.length ? `<ul>${retryTitles.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>` : '<p>No scenario retries were needed.</p>'}</div>
+    <h3 style="margin-top:24px">Optional IEP response counts</h3>
+    <p class="small">These counts are based only on responses selected in this game. They are not a complete IEP data record.</p>
+    <table class="track-table"><thead><tr><th>Tracked Response</th><th>Count</th></tr></thead><tbody>${trackedRows}</tbody></table>
+    <div class="button-row">
+      <button class="btn btn-secondary" id="backResults">Back to Results</button>
+      <button class="btn btn-primary" id="printBtn">Print Summary</button>
+    </div>`;
+  document.getElementById('backResults').onclick = renderResults;
+  document.getElementById('printBtn').onclick = () => window.print();
+}
+
+function renderTeacherSettings(){
+  const checks = GAME.trackingOptions.map(t => `<label class="toggle"><input type="checkbox" data-track="${t.key}" ${state.trackEnabled ? 'checked' : ''}> <span>${esc(t.label)}</span></label>`).join('');
+  screen.innerHTML = `
+    <div class="scenario-tag">Teacher Controls</div>
+    <h2>IEP Tracking</h2>
+    <p>Turn response tracking on or off for this play session. Scenario content can be edited in the <strong>GAME</strong> section of the HTML file.</p>
+    <label class="toggle"><input id="masterTrack" type="checkbox" ${state.trackEnabled ? 'checked' : ''}> <strong>Enable IEP response counting</strong></label>
+    <div class="toggle-wrap" id="trackingList">${checks}</div>
+    <button class="btn btn-secondary" id="closeTeacher">Return to Game</button>`;
+  document.getElementById('masterTrack').onchange = e => {
+    state.trackEnabled = e.target.checked;
+    document.querySelectorAll('[data-track]').forEach(cb => cb.checked = state.trackEnabled);
+  };
+  document.getElementById('trackingList').addEventListener('change', e => {
+    if(e.target.matches('[data-track]')){
+      const all = [...document.querySelectorAll('[data-track]')];
+      state.trackEnabled = all.some(cb=>cb.checked);
+      document.getElementById('masterTrack').checked = state.trackEnabled;
+    }
+  });
+  document.getElementById('closeTeacher').onclick = () => {
+    if(state.completed >= GAME.scenarios.length) renderResults();
+    else if(state.name) renderScenario();
+    else renderWelcome();
+  };
+}
+
+function resetGame(){
+  state.name="";
+  state.scenarioIndex=0;
+  state.currentRetries=0;
+  state.firstAttemptCorrect=0;
+  state.retryScenarioIds=[];
+  state.completed=0;
+  state.scores={regulation:0,communication:0,independence:0,problemSolving:0};
+  state.trackCounts={askedBreak:0,askedHelp:0,appropriateCommunication:0,safeResponse:0,createdSpace:0};
+  state.challengeStep=0;
+  state.challengeRetries=0;
+  state.inChallenge=false;
+  renderWelcome();
+}
+
+teacherOpenBtn.onclick = renderTeacherSettings;
+renderWelcome();
+</script>
+</body>
+</html>
