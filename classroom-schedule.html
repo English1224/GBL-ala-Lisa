@@ -5,7 +5,89 @@
 <title>Falcon Live Classroom Schedule</title>
 <style>
 :root{--burg:#7f1d1d;--soft:#f7eaea;--bg:#f5f5f5;--card:#fff;--border:#cfd3d8;--text:#202124;--muted:#666}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}.wrap{max-width:1180px;margin:auto;padding:16px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:15px}.label{font-size:13px;color:var(--muted);font-weight:700}.big{font-size:40px;font-weight:800}.hero{background:var(--soft);border:2px solid var(--burg);border-radius:18px;padding:24px;margin:12px 0}.activity{font-size:50px;font-weight:800;margin:7px 0}.range{font-size:22px}.controls,.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}button,.btnlink{font:inherit;border:1px solid #bbb;border-radius:10px;padding:9px 13px;background:#fff;cursor:pointer;text-decoration:none;color:var(--text);display:inline-block}.primary,.active,.linkbtn{background:var(--burg);color:#fff;border-color:var(--burg)}.progress{height:12px;background:#ddd;border-radius:12px;overflow:hidden;margin-top:10px}.bar{height:100%;background:var(--burg);width:0}.row{display:grid;grid-template-columns:165px minmax(0,1fr) auto;gap:10px;align-items:center;background:#fff;border:1px solid var(--border);border-radius:12px;padding:11px;margin:7px 0}.row.live{background:var(--soft);border:2px solid var(--burg)}.rowtitle{font-weight:700;font-size:18px}.small{font-size:13px;color:var(--muted)}.instructions{font-size:20px;line-height:1.4;margin-top:12px;padding:12px 14px;background:#fff;border-radius:12px;border:1px solid var(--border)}.rowinstructions{font-size:14px;color:var(--muted);margin-top:4px;line-height:1.35}.editor{display:none;margin-top:14px}.editor.show{display:block}.editrow{display:grid;grid-template-columns:105px 105px 1fr 1.35fr 1.2fr auto;gap:8px;align-items:end;padding:8px 0;border-bottom:1px solid #eee}input{width:100%;padding:9px;border:1px solid #bbb;border-radius:8px;font-size:15px}.datehead{font-size:18px;font-weight:700;margin:4px 0}.notice{background:#fff8e6;border:1px solid #e6c36a;border-radius:12px;padding:10px;margin:8px 0}@media(max-width:800px){.grid{grid-template-columns:1fr}.activity{font-size:34px}.row{grid-template-columns:1fr}.editrow{grid-template-columns:1fr 1fr}.wide{grid-column:1/-1}}@media print{.controls,.editor,.tabs,.notice{display:none!important}}
+
+.whiteboard-toggle{display:flex;gap:8px;justify-content:flex-end;margin:8px 0 14px}
+.whiteboard-mode .tabs,.whiteboard-mode .editor,.whiteboard-mode .notice,.whiteboard-mode .toolbar-extra{display:none!important}
+.whiteboard-mode .wrap{max-width:1400px;padding:12px}
+.whiteboard-mode .hero{min-height:250px;padding:22px}
+.whiteboard-mode .activity{font-size:clamp(36px,5vw,64px)}
+.whiteboard-mode .range{font-size:24px}
+.whiteboard-mode .instructions{font-size:24px}
+.whiteboard-mode .clock{font-size:42px}
+.whiteboard-mode .countdown{font-size:34px}
+.whiteboard-mode .schedule-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.whiteboard-mode .schedule-row{padding:10px}
+.whiteboard-mode .rowinstructions{font-size:13px;line-height:1.2}
+.whiteboard-mode .rowtitle{font-size:18px}
+.whiteboard-mode .schedule-row:nth-child(n+7){display:none}
+@media(max-width:900px){
+  .whiteboard-mode .schedule-list{grid-template-columns:1fr}
+  .whiteboard-mode .schedule-row:nth-child(n+5){display:none}
+}
+
+.reminders-box{
+  margin:12px 0 16px;
+  background:#fff;
+  border:2px solid var(--border);
+  border-radius:16px;
+  padding:14px 16px;
+}
+.reminders-title{
+  font-size:18px;
+  font-weight:800;
+  margin-bottom:8px;
+}
+.reminders-text{
+  font-size:18px;
+  line-height:1.4;
+  white-space:pre-wrap;
+}
+.reminders-editor{
+  margin-top:10px;
+}
+.reminders-editor textarea{
+  width:100%;
+  min-height:90px;
+  resize:vertical;
+  padding:10px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  font:inherit;
+}
+.whiteboard-mode .reminders-box{
+  position:sticky;
+  top:0;
+  z-index:5;
+  background:#fff;
+  margin:6px 0 10px;
+  padding:10px 14px;
+}
+.whiteboard-mode .reminders-title{
+  font-size:20px;
+}
+.whiteboard-mode .reminders-text{
+  font-size:22px;
+  line-height:1.35;
+}
+.whiteboard-mode .reminders-editor{
+  display:none!important;
+}
 </style></head><body><div class="wrap">
+<div class="whiteboard-toggle">
+  <button id="whiteboardBtn">Whiteboard Student View</button>
+  <button id="teacherViewBtn" style="display:none">Teacher View</button>
+</div>
+<div class="reminders-box">
+  <div class="reminders-title">📌 Reminders</div>
+  <div id="remindersText" class="reminders-text">Add today’s reminders in Teacher View.</div>
+  <div class="reminders-editor">
+    <label for="remindersInput"><b>Edit Reminders</b></label>
+    <textarea id="remindersInput" placeholder="Examples:
+• Bring Chromebook charger
+• Grub Run forms due Tuesday
+• Remember to clean your area before lunch"></textarea>
+  </div>
+</div>
   <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
     <a href="https://english1224.github.io/GBL-ala-Lisa/" 
        style="display:inline-block;padding:9px 13px;border-radius:10px;background:#7f1d1d;color:white;text-decoration:none;font-family:Arial,sans-serif">
@@ -49,4 +131,45 @@ function edit(){editorLabel.textContent=weeks[wi].days[di].label;editRows.innerH
 function all(){tabs();list();edit();update()}function tone(){if(!audioReady)return;const Ctx=window.AudioContext||window.webkitAudioContext,c=new Ctx();[659,784,988].forEach((q,i)=>{let o=c.createOscillator(),g=c.createGain();o.frequency.value=q;g.gain.setValueAtTime(.001,c.currentTime+i*.18);g.gain.exponentialRampToValueAtTime(.2,c.currentTime+i*.18+.02);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+i*.18+.16);o.connect(g);g.connect(c.destination);o.start(c.currentTime+i*.18);o.stop(c.currentTime+i*.18+.18)})}
 function update(){const d=new Date(),n=d.getHours()*60+d.getMinutes()+d.getSeconds()/60,s=I();clock.textContent=d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit',second:'2-digit'});const ai=s.findIndex(x=>n>=m(x.start)&&n<m(x.end));document.querySelectorAll('.row').forEach((r,i)=>r.classList.toggle('live',i===ai));currentLinkArea.innerHTML='';if(ai>=0){const x=s[ai],st=m(x.start),en=m(x.end),sec=Math.max(0,Math.round((en-n)*60));countdown.textContent=`${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`;status.textContent='In progress';current.textContent=x.activity;currentRange.textContent=`${f(x.start)}–${f(x.end)}`;currentInstructions.textContent=x.instructions||instructionsFor(x.activity);bar.style.width=Math.max(0,Math.min(100,(n-st)/(en-st)*100))+'%';currentLinkArea.innerHTML=link(x.link,'Open Current Activity');const nx=s[ai+1];next.textContent=nx?nx.activity:'End of scheduled activities';nextRange.textContent=nx?`${f(nx.start)}–${f(nx.end)}`:'—';if(last!==null&&ai!==last&&audioReady)tone();last=ai;return}countdown.textContent='--:--';bar.style.width='0%';if(!s.length){status.textContent='No schedule';current.textContent='Add activities';return}if(n<m(s[0].start)){status.textContent='Before school';current.textContent='Get Ready for the Day';currentRange.textContent=`First activity begins at ${f(s[0].start)}`;currentInstructions.textContent='Complete your arrival routine and be ready for the first scheduled activity.';next.textContent=s[0].activity;nextRange.textContent=`${f(s[0].start)}–${f(s[0].end)}`}else if(n>=m(s[s.length-1].end)){status.textContent='Complete';current.textContent='Daily Schedule Complete';currentRange.textContent='Great work today.';currentInstructions.textContent='Make sure your area is clean, materials are returned, and devices are plugged in.';next.textContent='—';nextRange.textContent='—'}else{const nx=s.find(x=>m(x.start)>n);status.textContent='Transition';current.textContent='Transition Time';currentRange.textContent=nx?`Next activity begins at ${f(nx.start)}`:'';currentInstructions.textContent='Finish the current step → clean up → move to the next activity when directed.';next.textContent=nx?nx.activity:'—';nextRange.textContent=nx?`${f(nx.start)}–${f(nx.end)}`:'—'}}
 startBtn.onclick=()=>{audioReady=true;tone();update()};toneBtn.onclick=()=>{audioReady=true;tone()};editBtn.onclick=()=>editor.classList.add('show');doneBtn.onclick=()=>{I().sort((a,b)=>m(a.start)-m(b.start));save();all();editor.classList.remove('show');last=null};addActivityBtn.onclick=()=>{const s=I(),l=s[s.length-1],t=l?l.end:'08:00';s.push({start:t,end:t,activity:'New Activity',instructions:'Follow the posted directions → ask for help when needed → clean up and transition when the tone sounds.',link:''});save();edit();list()};copyDayBtn.onclick=()=>{const q=prompt('Type part of the target day label (example: Thu 9/3)');for(const w of weeks){const d=w.days.find(x=>x.label.startsWith(q||''));if(d){d.items=C(I());save();alert('Copied.');return}}alert('Day not found.')};addWeekBtn.onclick=()=>{const num=weeks.length+1,name=prompt('Week name','Week '+num)||('Week '+num),dates=prompt('Date range','')||'';weeks.push({name,dates,days:['Monday','Tuesday','Wednesday','Thursday','Friday'].map(x=>({label:x,date:'',items:C(base)}))});wi=weeks.length-1;di=0;save();all()};printBtn.onclick=()=>window.print();load();ensureInstructions();save();const iso=new Date().toISOString().slice(0,10);outer:for(let a=0;a<weeks.length;a++)for(let b=0;b<weeks[a].days.length;b++)if(weeks[a].days[b].date===iso){wi=a;di=b;break outer}all();setInterval(update,1000);
+
+const whiteboardBtn=document.getElementById('whiteboardBtn');
+const teacherViewBtn=document.getElementById('teacherViewBtn');
+if(whiteboardBtn&&teacherViewBtn){
+  whiteboardBtn.onclick=()=>{
+    document.body.classList.add('whiteboard-mode');
+    whiteboardBtn.style.display='none';
+    teacherViewBtn.style.display='inline-block';
+    try{localStorage.setItem('falconWhiteboardMode','1')}catch(e){}
+  };
+  teacherViewBtn.onclick=()=>{
+    document.body.classList.remove('whiteboard-mode');
+    teacherViewBtn.style.display='none';
+    whiteboardBtn.style.display='inline-block';
+    try{localStorage.setItem('falconWhiteboardMode','0')}catch(e){}
+  };
+  try{
+    if(localStorage.getItem('falconWhiteboardMode')==='1'){
+      document.body.classList.add('whiteboard-mode');
+      whiteboardBtn.style.display='none';
+      teacherViewBtn.style.display='inline-block';
+    }
+  }catch(e){}
+}
+
+const remindersInput=document.getElementById('remindersInput');
+const remindersText=document.getElementById('remindersText');
+function loadReminders(){
+  let saved='';
+  try{saved=localStorage.getItem('falconScheduleReminders')||'';}catch(e){}
+  if(remindersInput) remindersInput.value=saved;
+  if(remindersText) remindersText.textContent=saved || 'Add today’s reminders in Teacher View.';
+}
+if(remindersInput){
+  remindersInput.addEventListener('input',()=>{
+    const val=remindersInput.value;
+    if(remindersText) remindersText.textContent=val || 'Add today’s reminders in Teacher View.';
+    try{localStorage.setItem('falconScheduleReminders',val);}catch(e){}
+  });
+}
+loadReminders();
 </script></body></html>
