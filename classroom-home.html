@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Falcon Classroom Home</title>
+<style>
+body{font-family:Arial,sans-serif;margin:0;background:#f5f5f5;color:#222}
+.wrap{max-width:1050px;margin:auto;padding:20px}
+h1{text-align:center;margin-bottom:4px}
+.sub{text-align:center;color:#666;margin-bottom:20px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.tile a{display:flex;min-height:130px;align-items:center;justify-content:center;text-align:center;background:#7f1d1d;color:white;text-decoration:none;font-size:26px;font-weight:700;border-radius:18px;padding:20px}
+.bar{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+button{padding:10px 14px;border-radius:10px;border:1px solid #bbb;background:white;font-size:15px;cursor:pointer}
+.primary{background:#7f1d1d;color:white;border-color:#7f1d1d}
+.editor{display:none;background:white;border:1px solid #ccc;border-radius:16px;padding:16px;margin-top:20px}
+.editor.show{display:block}
+.row{display:grid;grid-template-columns:1.1fr 1.7fr auto auto auto auto;gap:8px;align-items:end;padding:10px 0;border-bottom:1px solid #eee}
+input{width:100%;padding:9px;border:1px solid #bbb;border-radius:8px}
+label{font-size:13px;color:#666}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Falcon Classroom Home</h1>
+<div class="sub">Choose where you need to go.</div>
+
+<div class="bar">
+  <strong id="mode">Student View</strong>
+  <div>
+    <button id="editBtn">Teacher Edit Mode</button>
+    <button id="resetBtn">Reset Defaults</button>
+  </div>
+</div>
+
+<div id="grid" class="grid"></div>
+
+<div id="editor" class="editor">
+  <h2>Edit Classroom Buttons</h2>
+  <p>Change titles, links, order, or visibility. Changes save automatically on this browser.</p>
+  <div id="rows"></div>
+  <div style="margin-top:12px">
+    <button id="addBtn">Add New Button</button>
+    <button id="doneBtn" class="primary">Done Editing</button>
+  </div>
+</div>
+</div>
+
+<script>
+const defaults=[
+ {title:"🕒 Live Classroom Schedule",url:"classroom-schedule.html",visible:true},
+ {title:"🧠 Falcon Brain Quest",url:"index.html",visible:true},
+ {title:"🦅 Falcon Team Quest",url:"https://falcon-team-quest.lenglish509600.chatgpt.site/",visible:true},
+ {title:"🍔 Falcon Grub Run",url:"https://docs.google.com/presentation/d/1Ki4d3wR_42dAOOIdnoxzcU7ErNHWkm3Sy9QjJ3CKGpE/edit",visible:true},
+ {title:"📘 Day 1–4 Lesson Plan Book",url:"https://docs.google.com/document/d/1GFEJaajLN7fZvpIC7Z-7FsniAfBp2XrshH_AR8piBz0/edit",visible:true},
+ {title:"📊 2026–27 IEP Tracker",url:"https://docs.google.com/spreadsheets/d/1WWD4nNcEEf6qsDyJQyz9HYAdYLPDXg4RJSI1qB6gbac/edit",visible:false}
+];
+let buttons;
+try{buttons=JSON.parse(localStorage.getItem("falconHomeButtons"))||defaults.map(x=>({...x}))}catch(e){buttons=defaults.map(x=>({...x}))}
+function save(){localStorage.setItem("falconHomeButtons",JSON.stringify(buttons))}
+function renderGrid(){
+ const g=document.getElementById("grid");g.innerHTML="";
+ buttons.filter(x=>x.visible).forEach(x=>{
+  const d=document.createElement("div");d.className="tile";
+  const a=document.createElement("a");a.href=x.url||"#";a.target="_blank";a.rel="noopener";a.textContent=x.title||"Untitled";
+  d.appendChild(a);g.appendChild(d)
+ })
+}
+function renderRows(){
+ const r=document.getElementById("rows");r.innerHTML="";
+ buttons.forEach((x,i)=>{
+  const d=document.createElement("div");d.className="row";
+  d.innerHTML=`<label>Title<input class="t" value="${x.title.replace(/"/g,"&quot;")}"></label>
+  <label>Link<input class="u" value="${x.url.replace(/"/g,"&quot;")}"></label>
+  <label><input class="v" type="checkbox" ${x.visible?"checked":""}> Show</label>
+  <button class="up">↑</button><button class="down">↓</button><button class="rm">Remove</button>`;
+  d.querySelector(".t").oninput=e=>{x.title=e.target.value;save();renderGrid()};
+  d.querySelector(".u").oninput=e=>{x.url=e.target.value.trim();save();renderGrid()};
+  d.querySelector(".v").onchange=e=>{x.visible=e.target.checked;save();renderGrid()};
+  d.querySelector(".up").onclick=()=>{if(i>0){[buttons[i-1],buttons[i]]=[buttons[i],buttons[i-1]];save();renderRows();renderGrid()}};
+  d.querySelector(".down").onclick=()=>{if(i<buttons.length-1){[buttons[i+1],buttons[i]]=[buttons[i],buttons[i+1]];save();renderRows();renderGrid()}};
+  d.querySelector(".rm").onclick=()=>{buttons.splice(i,1);save();renderRows();renderGrid()};
+  r.appendChild(d)
+ })
+}
+editBtn.onclick=()=>{editor.classList.add("show");mode.textContent="Teacher Edit Mode";renderRows()};
+doneBtn.onclick=()=>{editor.classList.remove("show");mode.textContent="Student View"};
+addBtn.onclick=()=>{buttons.push({title:"New Button",url:"",visible:true});save();renderRows();renderGrid()};
+resetBtn.onclick=()=>{if(confirm("Reset all buttons to defaults?")){buttons=defaults.map(x=>({...x}));save();renderRows();renderGrid()}};
+renderGrid();
+</script>
+</body>
+</html>
