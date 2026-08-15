@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Falcon Live Classroom Schedule</title>
 <style>
-:root{--burg:#7f1d1d;--soft:#f7eaea;--bg:#f5f5f5;--card:#fff;--border:#cfd3d8;--text:#202124;--muted:#666}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}.wrap{max-width:1180px;margin:auto;padding:16px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:15px}.label{font-size:13px;color:var(--muted);font-weight:700}.big{font-size:40px;font-weight:800}.hero{background:var(--soft);border:2px solid var(--burg);border-radius:18px;padding:24px;margin:12px 0}.activity{font-size:50px;font-weight:800;margin:7px 0}.range{font-size:22px}.controls,.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}button,.btnlink{font:inherit;border:1px solid #bbb;border-radius:10px;padding:9px 13px;background:#fff;cursor:pointer;text-decoration:none;color:var(--text);display:inline-block}.primary,.active,.linkbtn{background:var(--burg);color:#fff;border-color:var(--burg)}.progress{height:12px;background:#ddd;border-radius:12px;overflow:hidden;margin-top:10px}.bar{height:100%;background:var(--burg);width:0}.row{display:grid;grid-template-columns:165px minmax(0,1fr) auto;gap:10px;align-items:deepClone(center);background:#fff;border:1px solid var(--border);border-radius:12px;padding:11px;margin:7px 0}.row.live{background:var(--soft);border:2px solid var(--burg)}.rowtitle{font-weight:700;font-size:18px}.small{font-size:13px;color:var(--muted)}.instructions{font-size:20px;line-height:1.4;margin-top:12px;padding:12px 14px;background:#fff;border-radius:12px;border:1px solid var(--border)}.rowinstructions{font-size:14px;color:var(--muted);margin-top:4px;line-height:1.35}.editor{display:none;margin-top:14px}.editor.show{display:block}.editrow{display:grid;grid-template-columns:105px 105px 1fr 1.35fr 1.2fr auto;gap:8px;align-items:deepClone(end);padding:8px 0;border-bottom:1px solid #eee}input{width:100%;padding:9px;border:1px solid #bbb;border-radius:8px;font-size:15px}.datehead{font-size:18px;font-weight:700;margin:4px 0}.notice{background:#fff8e6;border:1px solid #e6c36a;border-radius:12px;padding:10px;margin:8px 0}@media(max-width:800px){.grid{grid-template-columns:1fr}.activity{font-size:34px}.row{grid-template-columns:1fr}.editrow{grid-template-columns:1fr 1fr}.wide{grid-column:1/-1}}@media print{.controls,.editor,.tabs,.notice{display:none!important}}
+:root{--font:Arial, sans-serif;--burg:#7f1d1d;--soft:#f7eaea;--bg:#f5f5f5;--card:#fff;--border:#cfd3d8;--text:#202124;--muted:#666}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}.wrap{max-width:1180px;margin:auto;padding:16px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:15px}.label{font-size:13px;color:var(--muted);font-weight:700}.big{font-size:40px;font-weight:800}.hero{background:var(--soft);border:2px solid var(--burg);border-radius:18px;padding:24px;margin:12px 0}.activity{font-size:50px;font-weight:800;margin:7px 0}.range{font-size:22px}.controls,.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}button,.btnlink{font:inherit;border:1px solid #bbb;border-radius:10px;padding:9px 13px;background:#fff;cursor:pointer;text-decoration:none;color:var(--text);display:inline-block}.primary,.active,.linkbtn{background:var(--burg);color:#fff;border-color:var(--burg)}.progress{height:12px;background:#ddd;border-radius:12px;overflow:hidden;margin-top:10px}.bar{height:100%;background:var(--burg);width:0}.row{display:grid;grid-template-columns:165px minmax(0,1fr) auto;gap:10px;align-items:deepClone(center);background:#fff;border:1px solid var(--border);border-radius:12px;padding:11px;margin:7px 0}.row.live{background:var(--soft);border:2px solid var(--burg)}.rowtitle{font-weight:700;font-size:18px}.small{font-size:13px;color:var(--muted)}.instructions{font-size:20px;line-height:1.4;margin-top:12px;padding:12px 14px;background:#fff;border-radius:12px;border:1px solid var(--border)}.rowinstructions{font-size:14px;color:var(--muted);margin-top:4px;line-height:1.35}.editor{display:none;margin-top:14px}.editor.show{display:block}.editrow{display:grid;grid-template-columns:105px 105px 1fr 1.35fr 1.2fr auto;gap:8px;align-items:deepClone(end);padding:8px 0;border-bottom:1px solid #eee}input{width:100%;padding:9px;border:1px solid #bbb;border-radius:8px;font-size:15px}.datehead{font-size:18px;font-weight:700;margin:4px 0}.notice{background:#fff8e6;border:1px solid #e6c36a;border-radius:12px;padding:10px;margin:8px 0}@media(max-width:800px){.grid{grid-template-columns:1fr}.activity{font-size:34px}.row{grid-template-columns:1fr}.editrow{grid-template-columns:1fr 1fr}.wide{grid-column:1/-1}}@media print{.controls,.editor,.tabs,.notice{display:none!important}}
 
 .whiteboard-toggle{display:flex;gap:8px;justify-content:flex-end;margin:8px 0 14px}
 .whiteboard-mode .tabs,.whiteboard-mode .editor,.whiteboard-mode .notice,.whiteboard-mode .toolbar-extra{display:none!important}
@@ -97,6 +97,11 @@
 }
 .whiteboard-mode .appearance-panel{display:none!important}
 @media(max-width:760px){.appearance-grid{grid-template-columns:1fr}}
+
+html,body,button,input,select,textarea,.activity,.range,.instructions,.rowtitle,.rowinstructions,.clock,.countdown,.reminders-box,.appearance-panel{
+  font-family:var(--font, Arial, sans-serif)!important;
+}
+
 </style></head><body><div class="wrap">
 <div class="whiteboard-toggle">
   <button id="whiteboardBtn">Whiteboard Student View</button>
@@ -248,7 +253,7 @@ const textColor=document.getElementById('textColor');
 const resetAppearanceBtn=document.getElementById('resetAppearanceBtn');
 
 function applyAppearance(s){
-  document.documentElement.style.setProperty('--font',s.font);
+  document.documentElement.style.setProperty('--font',s.font);document.body.style.fontFamily=s.font;
   document.documentElement.style.setProperty('--burg',s.main);
   document.documentElement.style.setProperty('--soft',s.soft);
   document.documentElement.style.setProperty('--bg',s.bg);
@@ -292,4 +297,12 @@ if(resetAppearanceBtn){
   };
 }
 loadAppearance();
+
+if(fontSelect){
+  fontSelect.addEventListener('change',()=>{
+    document.documentElement.style.setProperty('--font',fontSelect.value);
+    document.body.style.fontFamily=fontSelect.value;
+    saveAppearance();
+  });
+}
 </script></body></html>
