@@ -4,26 +4,57 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Falcon Live Classroom Schedule</title>
 <style>
-:root{--font:Arial,sans-serif;--burg:#7f1d1d;--soft:#f7eaea;--bg:#f5f5f5;--card:#fff;--border:#cfd3d8;--text:#202124;--muted:#666}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}.wrap{max-width:1180px;margin:auto;padding:16px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:15px}.label{font-size:13px;color:var(--muted);font-weight:700}.big{font-size:40px;font-weight:800}.hero{background:var(--soft);border:2px solid var(--burg);border-radius:18px;padding:24px;margin:12px 0}.activity{font-size:50px;font-weight:800;margin:7px 0}.range{font-size:22px}.controls,.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}button,.btnlink{font:inherit;border:1px solid #bbb;border-radius:10px;padding:9px 13px;background:#fff;cursor:pointer;text-decoration:none;color:var(--text);display:inline-block}.primary,.active,.linkbtn{background:var(--burg);color:#fff;border-color:var(--burg)}.progress{height:12px;background:#ddd;border-radius:12px;overflow:hidden;margin-top:10px}.bar{height:100%;background:var(--burg);width:0}.row{display:grid;grid-template-columns:165px minmax(0,1fr) auto;gap:10px;align-items:center;background:#fff;border:1px solid var(--border);border-radius:12px;padding:11px;margin:7px 0}.row.live{background:var(--soft);border:2px solid var(--burg)}.rowtitle{font-weight:700;font-size:18px}.small{font-size:13px;color:var(--muted)}.instructions{font-size:20px;line-height:1.4;margin-top:12px;padding:12px 14px;background:#fff;border-radius:12px;border:1px solid var(--border)}.rowinstructions{font-size:14px;color:var(--muted);margin-top:4px;line-height:1.35}.editor{display:none;margin-top:14px}.editor.show{display:block}.editrow{display:grid;grid-template-columns:105px 105px 1fr 1.35fr 1.2fr auto;gap:8px;align-items:end;padding:8px 0;border-bottom:1px solid #eee}input{width:100%;padding:9px;border:1px solid #bbb;border-radius:8px;font-size:15px}.datehead{font-size:18px;font-weight:700;margin:4px 0}.notice{background:#fff8e6;border:1px solid #e6c36a;border-radius:12px;padding:10px;margin:8px 0}@media(max-width:800px){.grid{grid-template-columns:1fr}.activity{font-size:34px}.row{grid-template-columns:1fr}.editrow{grid-template-columns:1fr 1fr}.wide{grid-column:1/-1}}@media print{.controls,.editor,.tabs,.notice{display:none!important}}
+:root{--font:Arial,sans-serif;--burg:#5B7C85;--soft:#EAF3F5;--bg:#F3F7F8;--card:#FFFFFF;--border:#C8D6DA;--text:#2F3E46;--muted:#5F6F76}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}.wrap{max-width:1180px;margin:auto;padding:16px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:15px}.label{font-size:13px;color:var(--muted);font-weight:700}.big{font-size:40px;font-weight:800}.hero{background:var(--soft);border:2px solid var(--burg);border-radius:18px;padding:24px;margin:12px 0}.activity{font-size:50px;font-weight:800;margin:7px 0}.range{font-size:22px}.controls,.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}button,.btnlink{font:inherit;border:1px solid #bbb;border-radius:10px;padding:9px 13px;background:#fff;cursor:pointer;text-decoration:none;color:var(--text);display:inline-block}.primary,.active,.linkbtn{background:var(--burg);color:#fff;border-color:var(--burg)}.progress{height:12px;background:#ddd;border-radius:12px;overflow:hidden;margin-top:10px}.bar{height:100%;background:var(--burg);width:0}.row{display:grid;grid-template-columns:165px minmax(0,1fr) auto;gap:10px;align-items:center;background:#fff;border:1px solid var(--border);border-radius:12px;padding:11px;margin:7px 0}.row.live{background:var(--soft);border:2px solid var(--burg)}.rowtitle{font-weight:700;font-size:18px}.small{font-size:13px;color:var(--muted)}.instructions{font-size:20px;line-height:1.4;margin-top:12px;padding:12px 14px;background:#fff;border-radius:12px;border:1px solid var(--border)}.rowinstructions{font-size:14px;color:var(--muted);margin-top:4px;line-height:1.35}.editor{display:none;margin-top:14px}.editor.show{display:block}.editrow{display:grid;grid-template-columns:105px 105px 1fr 1.35fr 1.2fr auto;gap:8px;align-items:end;padding:8px 0;border-bottom:1px solid #eee}input{width:100%;padding:9px;border:1px solid #bbb;border-radius:8px;font-size:15px}.datehead{font-size:18px;font-weight:700;margin:4px 0}.notice{background:#fff8e6;border:1px solid #e6c36a;border-radius:12px;padding:10px;margin:8px 0}@media(max-width:800px){.grid{grid-template-columns:1fr}.activity{font-size:34px}.row{grid-template-columns:1fr}.editrow{grid-template-columns:1fr 1fr}.wide{grid-column:1/-1}}@media print{.controls,.editor,.tabs,.notice{display:none!important}}
 
 .whiteboard-toggle{display:flex;gap:8px;justify-content:flex-end;margin:8px 0 14px}
 .whiteboard-mode .tabs,.whiteboard-mode .editor,.whiteboard-mode .notice,.whiteboard-mode .toolbar-extra{display:none!important}
 .whiteboard-mode .whiteboard-toggle label{display:none!important}
 .whiteboard-mode .wrap{max-width:1400px;padding:12px}
-.whiteboard-mode .hero{min-height:250px;padding:22px}
-.whiteboard-mode .activity{font-size:clamp(36px,5vw,64px)}
-.whiteboard-mode .range{font-size:24px}
-.whiteboard-mode .instructions{font-size:24px}
-.whiteboard-mode .clock{font-size:42px}
-.whiteboard-mode .countdown{font-size:34px}
-.whiteboard-mode .schedule-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.whiteboard-mode .schedule-row{padding:10px}
-.whiteboard-mode .rowinstructions{font-size:13px;line-height:1.2}
-.whiteboard-mode .rowtitle{font-size:18px}
-.whiteboard-mode .schedule-row:nth-child(n+7){display:none}
-@media(max-width:900px){
-  .whiteboard-mode .schedule-list{grid-template-columns:1fr}
-  .whiteboard-mode .schedule-row:nth-child(n+5){display:none}
+.whiteboard-mode .hero{min-height:185px;padding:16px}
+.whiteboard-mode .activity{font-size:clamp(30px,4.2vw,52px)}
+.whiteboard-mode .range{font-size:20px}
+.whiteboard-mode .instructions{font-size:18px;line-height:1.25;padding:8px 10px;margin-top:8px}
+.whiteboard-mode .clock{font-size:34px}
+.whiteboard-mode .countdown{font-size:28px}
+.whiteboard-mode .schedule-list{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:6px;
+}
+.whiteboard-mode .schedule-row{
+  padding:7px 8px;
+  min-height:0;
+}
+.whiteboard-mode .schedule-row > div:first-child{
+  font-size:12px;
+}
+.whiteboard-mode .rowtitle{
+  font-size:15px;
+  line-height:1.1;
+}
+.whiteboard-mode .rowinstructions{
+  font-size:11px;
+  line-height:1.15;
+  margin-top:2px;
+}
+.whiteboard-mode .schedule-row .btnlink{
+  font-size:11px;
+  padding:5px 7px;
+}
+.whiteboard-mode .schedule-row:nth-child(n){
+  display:grid;
+}
+@media(max-width:1100px){
+  .whiteboard-mode .schedule-list{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .whiteboard-mode .rowtitle{font-size:14px}
+  .whiteboard-mode .rowinstructions{font-size:10.5px}
+}
+@media(max-width:760px){
+  .whiteboard-mode .schedule-list{
+    grid-template-columns:1fr;
+  }
 }
 
 .reminders-box{
@@ -60,15 +91,16 @@
   top:0;
   z-index:5;
   background:#fff;
-  margin:6px 0 10px;
-  padding:10px 14px;
+  margin:4px 0 8px;
+  padding:7px 10px;
 }
 .whiteboard-mode .reminders-title{
-  font-size:20px;
+  font-size:16px;
+  margin-bottom:3px;
 }
 .whiteboard-mode .reminders-text{
-  font-size:22px;
-  line-height:1.35;
+  font-size:16px;
+  line-height:1.2;
 }
 .whiteboard-mode .reminders-editor{
   display:none!important;
@@ -104,7 +136,7 @@ button,input,select,textarea,a,.activity,.rowtitle,.rowinstructions,.instruction
 </div>
   <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
     <a href="classroom-home.html" 
-       style="display:inline-block;padding:9px 13px;border-radius:10px;background:#7f1d1d;color:white;text-decoration:none;font-family:Arial,sans-serif">
+       style="display:inline-block;padding:9px 13px;border-radius:10px;background:var(--burg);color:white;text-decoration:none;font-family:Arial,sans-serif">
       ← Falcon Home
     </a>
   </div>
@@ -113,6 +145,8 @@ button,input,select,textarea,a,.activity,.rowtitle,.rowinstructions,.instruction
 <div class="hero"><div class="label">RIGHT NOW</div><div id="current" class="activity">Press Start Schedule</div><div id="currentRange" class="range">The schedule follows the classroom clock.</div><div id="currentInstructions" class="instructions">Instructions will appear here when the schedule is running.</div><div id="currentLinkArea" style="margin-top:12px"></div></div>
 <div class="card"><div class="label">NEXT</div><div id="next" style="font-size:27px;font-weight:800">—</div><div id="nextRange" class="small">—</div><div class="progress"><div id="bar" class="bar"></div></div></div>
 <div class="controls"><button id="startBtn" class="primary">Start Schedule</button><button id="toneBtn">Test Tone</button><button id="editBtn">Edit Selected Day</button><button id="addWeekBtn">Add New Week</button><button id="printBtn">Print</button></div>
+
+<div class="notice"><b>Whiteboard tip:</b> The full-day student view is designed to show every activity. For the best fit, use Chrome full screen (F11). If your board has a smaller resolution, zoom to 90% with Ctrl + -.</div>
 <div class="notice"><b>Edit each activity:</b> Add short student-facing directions in the <b>Instructions</b> box and paste any Google Doc, Slides, PDF, website, Minecraft, or other resource into <b>Link</b>. The current directions appear automatically on the whiteboard.</div>
 <div class="card"><div class="label">SELECTED DAY SCHEDULE</div><div id="list"></div></div>
 <div id="editor" class="card editor"><h2>Edit <span id="editorLabel"></span></h2><div class="small">Changes save automatically on this computer/browser.</div><div id="editRows"></div><div class="controls"><button id="addActivityBtn">Add Activity</button><button id="copyDayBtn">Copy This Day</button><button id="doneBtn" class="primary">Done Editing</button></div></div>
