@@ -146,7 +146,7 @@ button,input,select,textarea,a,.activity,.rowtitle,.rowinstructions,.instruction
 <div class="card"><div class="label">NEXT</div><div id="next" style="font-size:27px;font-weight:800">—</div><div id="nextRange" class="small">—</div><div class="progress"><div id="bar" class="bar"></div></div></div>
 <div class="controls"><button id="startBtn" class="primary">Start Schedule</button><button id="toneBtn">Test Tone</button><button id="editBtn">Edit Selected Day</button><button id="addWeekBtn">Add New Week</button><button id="printBtn">Print</button></div>
 
-<div class="notice"><b>Quick adjustments:</b> Use <b>Edit Selected Day → Schedule Date</b> to move a schedule. Use <b>Copy This Day</b> when two dates need the same schedule. You should not need to edit GitHub code for normal schedule changes.</div><div class="notice"><b>Whiteboard tip:</b> The full-day student view is designed to show every activity. For the best fit, use Chrome full screen (F11). If your board has a smaller resolution, zoom to 90% with Ctrl + -.</div>
+<div class="notice"><b>Quick adjustments:</b> Use <b>Edit Selected Day → Schedule Date</b> to move a schedule. Use <b>Add Day to This Group</b> or <b>Delete Selected Day</b> to change a date group. Use <b>Copy This Day</b> when two dates need the same schedule. You should not need to edit GitHub code for normal schedule changes.</div><div class="notice"><b>Whiteboard tip:</b> The full-day student view is designed to show every activity. For the best fit, use Chrome full screen (F11). If your board has a smaller resolution, zoom to 90% with Ctrl + -.</div>
 <div class="notice"><b>Edit each activity:</b> Add short student-facing directions in the <b>Instructions</b> box and paste any Google Doc, Slides, PDF, website, Minecraft, or other resource into <b>Link</b>. The current directions appear automatically on the whiteboard.</div>
 <div class="card"><div class="label">SELECTED DAY SCHEDULE</div><div id="list"></div></div>
 <div id="editor" class="card editor">
@@ -167,6 +167,9 @@ button,input,select,textarea,a,.activity,.rowtitle,.rowinstructions,.instruction
 <div class="controls">
   <button id="addActivityBtn">Add Activity</button>
   <button id="copyDayBtn">Copy This Day</button>
+  
+  <button id="addDayBtn">Add Day to This Group</button>
+  <button id="deleteDayBtn">Delete Selected Day</button>
   <button id="doneBtn" class="primary">Done Editing</button>
 </div>
 </div>
@@ -231,7 +234,19 @@ function save(){saveDay(weeks[wi].days[di],wi,di)}
 function saveExtraWeeks(){
   try{localStorage.setItem('falconScheduleExtraWeeksV1',JSON.stringify(weeks.slice(W.length)))}catch(e){}
 }
-function I(){return weeks[wi].days[di].items}function m(t){let[a,b]=t.split(':').map(Number);return a*60+b}function f(t){let[a,b]=t.split(':').map(Number),d=new Date();d.setHours(a,b,0,0);return d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}function link(u,t='Open Activity'){return u?`<a class="btnlink linkbtn" href="${esc(u)}" target="_blank" rel="noopener">${t}</a>`:''}
+function I(){return weeks[wi].days[di].items}
+function saveCurrentGroup(){
+  weeks[wi].days.forEach((d,index)=>saveDay(d,wi,index));
+  saveExtraWeeks();
+}
+function sortCurrentGroupByDate(){
+  weeks[wi].days.sort((a,b)=>{
+    if(!a.date && !b.date) return 0;
+    if(!a.date) return 1;
+    if(!b.date) return -1;
+    return a.date.localeCompare(b.date);
+  });
+}function m(t){let[a,b]=t.split(':').map(Number);return a*60+b}function f(t){let[a,b]=t.split(':').map(Number),d=new Date();d.setHours(a,b,0,0);return d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}function link(u,t='Open Activity'){return u?`<a class="btnlink linkbtn" href="${esc(u)}" target="_blank" rel="noopener">${t}</a>`:''}
 
 function cleanDayLabel(label){
   return String(label||'').replace(/\s*•\s*Day\s+\d+\s*/gi,'').trim();
@@ -297,6 +312,54 @@ if(scheduleDateInput){
     all();
     editor.classList.add('show');
   });
+}
+
+
+const addDayBtn=document.getElementById('addDayBtn');
+const deleteDayBtn=document.getElementById('deleteDayBtn');
+
+if(addDayBtn){
+  addDayBtn.onclick=()=>{
+    const chosen=prompt('Enter the new date as YYYY-MM-DD (example: 2026-08-27)');
+    if(!chosen) return;
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(chosen)){
+      alert('Please use YYYY-MM-DD, for example 2026-08-27.');
+      return;
+    }
+    if(weeks[wi].days.some(d=>d.date===chosen)){
+      alert('That date is already in this group.');
+      return;
+    }
+    const newDay={
+      label:labelFromDate(chosen),
+      date:chosen,
+      items:C(base)
+    };
+    weeks[wi].days.push(newDay);
+    sortCurrentGroupByDate();
+    di=weeks[wi].days.findIndex(d=>d.date===chosen);
+    ensureInstructions();
+    saveCurrentGroup();
+    all();
+    editor.classList.add('show');
+  };
+}
+
+if(deleteDayBtn){
+  deleteDayBtn.onclick=()=>{
+    if(weeks[wi].days.length<=1){
+      alert('This group must keep at least one day.');
+      return;
+    }
+    const d=weeks[wi].days[di];
+    const name=d.date?labelFromDate(d.date):cleanDayLabel(d.label);
+    if(!confirm('Delete '+name+' from this group?')) return;
+    weeks[wi].days.splice(di,1);
+    if(di>=weeks[wi].days.length) di=weeks[wi].days.length-1;
+    saveCurrentGroup();
+    all();
+    editor.classList.add('show');
+  };
 }
 
 startBtn.onclick=()=>{audioReady=true;tone();update()};toneBtn.onclick=()=>{audioReady=true;tone()};editBtn.onclick=()=>editor.classList.add('show');doneBtn.onclick=()=>{I().sort((a,b)=>m(a.start)-m(b.start));save();all();editor.classList.remove('show');last=null};addActivityBtn.onclick=()=>{const s=I(),l=s[s.length-1],t=l?l.end:'08:00';s.push({start:t,end:t,activity:'New Activity',instructions:'Follow the posted directions → ask for help when needed → clean up and transition when the tone sounds.',link:''});save();edit();list()};copyDayBtn.onclick=()=>{const q=prompt('Type part of the target day label (example: Thu 9/3)');for(let a=0;a<weeks.length;a++){const b=weeks[a].days.findIndex(x=>cleanDayLabel(x.label).startsWith(q||''));if(b>=0){weeks[a].days[b].items=C(I());saveDay(weeks[a].days[b],a,b);alert('Copied.');return}}alert('Day not found.')};addWeekBtn.onclick=()=>{const num=weeks.length+1,name=prompt('Week name','Week '+num)||('Week '+num);weeks.push({name,dates:'',days:['Monday','Tuesday','Wednesday','Thursday','Friday'].map(x=>({label:x,date:'',items:C(base)}))});wi=weeks.length-1;di=0;saveExtraWeeks();save();all()};printBtn.onclick=()=>window.print();load();ensureInstructions();const iso=new Date().toISOString().slice(0,10);outer:for(let a=0;a<weeks.length;a++)for(let b=0;b<weeks[a].days.length;b++)if(weeks[a].days[b].date===iso){wi=a;di=b;break outer}all();setInterval(update,1000);
