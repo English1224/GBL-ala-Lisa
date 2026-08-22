@@ -241,25 +241,25 @@ function labelFromDate(iso){
   const [y,m,d]=iso.split('-').map(Number);
   const dt=new Date(y,m-1,d,12,0,0);
   return dt.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
-});
 }
 function weekDateRange(w){
   const ds=w.days.map(d=>d.date).filter(Boolean).sort();
   if(!ds.length) return '';
-  const fmt=iso=>{
-    const [y,m,d]=iso.split('-').map(Number);
-    return new Date(y,m-1,d,12).toLocaleDateString('en-US',{month:'long',day:'numeric'});
+  const parts=iso=>iso.split('-').map(Number);
+  const full=iso=>{
+    const [y,m,d]=parts(iso);
+    return new Date(y,m-1,d,12,0,0).toLocaleDateString('en-US',{month:'long',day:'numeric'});
   };
-  if(ds.length===1) return fmt(ds[0]);
+  if(ds.length===1) return full(ds[0]);
 
-  const [y1,m1,d1]=ds[0].split('-').map(Number);
-  const [y2,m2,d2]=ds[ds.length-1].split('-').map(Number);
+  const [y1,m1,d1]=parts(ds[0]);
+  const [y2,m2,d2]=parts(ds[ds.length-1]);
 
   if(y1===y2 && m1===m2){
-    const month=new Date(y1,m1-1,d1,12).toLocaleDateString('en-US',{month:'long'});
+    const month=new Date(y1,m1-1,d1,12,0,0).toLocaleDateString('en-US',{month:'long'});
     return month+' '+d1+'–'+d2;
   }
-  return fmt(ds[0])+'–'+fmt(ds[ds.length-1]);
+  return full(ds[0])+'–'+full(ds[ds.length-1]);
 }
 
 function instructionsFor(a){a=(a||'').toLowerCase();if(a.includes('arrival')||a.includes('breakfast'))return 'Put belongings away → complete lunch choice → eat in the kitchen/dining area → clean your space → check the schedule.';if(a.includes('brain break')||a==='break'||a.includes('movement'))return 'Choose an approved movement or quiet reset → use the break appropriately → return when the next activity begins.';if(a.includes('edgenuity'))return 'Log in → open your assigned course → work toward today’s goal → ask for help when needed → stop and close when directed.';if(a.includes('minecraft'))return 'Open the assigned activity/world → follow classroom expectations → ask for help appropriately → save/exit → close and plug in the Chromebook.';if(a.includes('tinker'))return 'Choose → Plan → Gather approved materials → Build → Test/Improve → Clean Up and return all tools/materials.';if(a.includes('finance'))return 'Get your finance materials → complete today’s lesson/worksheet → ask for help as needed → turn in or file your work.';if(a.includes('ai literacy')||a.includes('ai contract'))return 'Open today’s AI lesson/materials → participate → complete the assigned response → close materials when directed.';if(a.includes('grub run')||a.includes('take my order'))return 'Follow today’s Grub Run job step → check accuracy → use respectful customer-service language → ask for help if needed.';if(a.includes('snack')||a.includes('lunch'))return 'Eat in the approved food area → use appropriate conversation and space → clean your area before leaving.';if(a.includes('game time')||a.includes('free choice')||a.includes('choice work'))return 'Choose an approved activity → use materials/technology responsibly → stop and clean up when the transition tone sounds.';if(a.includes('clean up'))return 'Clear your desk → return materials → close/plug in devices → wipe your area → check that the room is ready.';if(a.includes('gym'))return 'Participate safely → respect personal space and equipment → follow staff directions → return to class when directed.';if(a.includes('user manual')||a.includes('falcon tree')||a.includes('circle'))return 'Join the group → participate in your preferred response format → listen respectfully → complete the activity before transition.';return 'Follow the posted directions → ask for help when needed → clean up and transition when the tone sounds.'}function ensureInstructions(){weeks.forEach(w=>w.days.forEach(d=>d.items.forEach(x=>{if(!x.instructions)x.instructions=instructionsFor(x.activity)})))}function tabs(){
