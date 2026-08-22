@@ -240,16 +240,26 @@ function labelFromDate(iso){
   if(!iso) return '';
   const [y,m,d]=iso.split('-').map(Number);
   const dt=new Date(y,m-1,d,12,0,0);
-  return dt.toLocaleDateString('en-US',{weekday:'short',month:'numeric',day:'numeric'});
+  return dt.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+});
 }
 function weekDateRange(w){
   const ds=w.days.map(d=>d.date).filter(Boolean).sort();
   if(!ds.length) return '';
-  const nice=iso=>{
+  const fmt=iso=>{
     const [y,m,d]=iso.split('-').map(Number);
-    return new Date(y,m-1,d,12).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    return new Date(y,m-1,d,12).toLocaleDateString('en-US',{month:'long',day:'numeric'});
   };
-  return ds.length===1 ? nice(ds[0]) : nice(ds[0])+'–'+nice(ds[ds.length-1]);
+  if(ds.length===1) return fmt(ds[0]);
+
+  const [y1,m1,d1]=ds[0].split('-').map(Number);
+  const [y2,m2,d2]=ds[ds.length-1].split('-').map(Number);
+
+  if(y1===y2 && m1===m2){
+    const month=new Date(y1,m1-1,d1,12).toLocaleDateString('en-US',{month:'long'});
+    return month+' '+d1+'–'+d2;
+  }
+  return fmt(ds[0])+'–'+fmt(ds[ds.length-1]);
 }
 
 function instructionsFor(a){a=(a||'').toLowerCase();if(a.includes('arrival')||a.includes('breakfast'))return 'Put belongings away → complete lunch choice → eat in the kitchen/dining area → clean your space → check the schedule.';if(a.includes('brain break')||a==='break'||a.includes('movement'))return 'Choose an approved movement or quiet reset → use the break appropriately → return when the next activity begins.';if(a.includes('edgenuity'))return 'Log in → open your assigned course → work toward today’s goal → ask for help when needed → stop and close when directed.';if(a.includes('minecraft'))return 'Open the assigned activity/world → follow classroom expectations → ask for help appropriately → save/exit → close and plug in the Chromebook.';if(a.includes('tinker'))return 'Choose → Plan → Gather approved materials → Build → Test/Improve → Clean Up and return all tools/materials.';if(a.includes('finance'))return 'Get your finance materials → complete today’s lesson/worksheet → ask for help as needed → turn in or file your work.';if(a.includes('ai literacy')||a.includes('ai contract'))return 'Open today’s AI lesson/materials → participate → complete the assigned response → close materials when directed.';if(a.includes('grub run')||a.includes('take my order'))return 'Follow today’s Grub Run job step → check accuracy → use respectful customer-service language → ask for help if needed.';if(a.includes('snack')||a.includes('lunch'))return 'Eat in the approved food area → use appropriate conversation and space → clean your area before leaving.';if(a.includes('game time')||a.includes('free choice')||a.includes('choice work'))return 'Choose an approved activity → use materials/technology responsibly → stop and clean up when the transition tone sounds.';if(a.includes('clean up'))return 'Clear your desk → return materials → close/plug in devices → wipe your area → check that the room is ready.';if(a.includes('gym'))return 'Participate safely → respect personal space and equipment → follow staff directions → return to class when directed.';if(a.includes('user manual')||a.includes('falcon tree')||a.includes('circle'))return 'Join the group → participate in your preferred response format → listen respectfully → complete the activity before transition.';return 'Follow the posted directions → ask for help when needed → clean up and transition when the tone sounds.'}function ensureInstructions(){weeks.forEach(w=>w.days.forEach(d=>d.items.forEach(x=>{if(!x.instructions)x.instructions=instructionsFor(x.activity)})))}function tabs(){
@@ -257,7 +267,7 @@ function instructionsFor(a){a=(a||'').toLowerCase();if(a.includes('arrival')||a.
   weeks.forEach((w,i)=>{
     let b=document.createElement('button');
     const range=weekDateRange(w);
-    b.textContent=w.name+(range?' • '+range:'');
+    b.textContent=range||w.name;
     b.className=i===wi?'active':'';
     b.onclick=()=>{wi=i;di=0;last=null;all()};
     weekTabs.appendChild(b)
@@ -265,15 +275,15 @@ function instructionsFor(a){a=(a||'').toLowerCase();if(a.includes('arrival')||a.
   dayTabs.innerHTML='';
   weeks[wi].days.forEach((d,i)=>{
     let b=document.createElement('button');
-    b.textContent=cleanDayLabel(d.label);
+    b.textContent=d.date?labelFromDate(d.date):cleanDayLabel(d.label);
     b.className=i===di?'active':'';
     b.onclick=()=>{di=i;last=null;all()};
     dayTabs.appendChild(b)
   });
-  dateHead.textContent=weeks[wi].name+' — '+cleanDayLabel(weeks[wi].days[di].label)
+  dateHead.textContent=weeks[wi].days[di].date?labelFromDate(weeks[wi].days[di].date):cleanDayLabel(weeks[wi].days[di].label)
 }
 function list(){document.getElementById('list').innerHTML='';I().forEach((x,i)=>{let r=document.createElement('div');r.className='row';r.innerHTML=`<div><b>${f(x.start)}–${f(x.end)}</b></div><div><div class="rowtitle">${esc(x.activity)}</div><div class="rowinstructions">${esc(x.instructions||instructionsFor(x.activity))}</div></div><div>${link(x.link)}</div>`;document.getElementById('list').appendChild(r)})}
-function edit(){editorLabel.textContent=cleanDayLabel(weeks[wi].days[di].label);const dateEl=document.getElementById('scheduleDateInput');if(dateEl)dateEl.value=weeks[wi].days[di].date||'';editRows.innerHTML='';I().forEach((x,i)=>{let r=document.createElement('div');r.className='editrow';r.innerHTML=`<label>Start<input class="s" type="time" value="${esc(x.start)}"></label><label>End<input class="e" type="time" value="${esc(x.end)}"></label><label class="wide">Activity<input class="a" value="${esc(x.activity)}"></label><label class="wide">Instructions<input class="ins" placeholder="Short student-facing directions" value="${esc(x.instructions||instructionsFor(x.activity))}"></label><label class="wide">Link<input class="u" placeholder="Paste Google Doc / Slides / website URL" value="${esc(x.link)}"></label><button class="rm">Remove</button>`;r.querySelector('.s').oninput=z=>{x.start=z.target.value;save();list();update()};r.querySelector('.e').oninput=z=>{x.end=z.target.value;save();list();update()};r.querySelector('.a').oninput=z=>{x.activity=z.target.value;save();list();update()};r.querySelector('.ins').oninput=z=>{x.instructions=z.target.value;save();list();update()};r.querySelector('.u').oninput=z=>{x.link=z.target.value.trim();save();list();update()};r.querySelector('.rm').onclick=()=>{I().splice(i,1);save();edit();list();update()};editRows.appendChild(r)})}
+function edit(){editorLabel.textContent=weeks[wi].days[di].date?labelFromDate(weeks[wi].days[di].date):cleanDayLabel(weeks[wi].days[di].label);const dateEl=document.getElementById('scheduleDateInput');if(dateEl)dateEl.value=weeks[wi].days[di].date||'';editRows.innerHTML='';I().forEach((x,i)=>{let r=document.createElement('div');r.className='editrow';r.innerHTML=`<label>Start<input class="s" type="time" value="${esc(x.start)}"></label><label>End<input class="e" type="time" value="${esc(x.end)}"></label><label class="wide">Activity<input class="a" value="${esc(x.activity)}"></label><label class="wide">Instructions<input class="ins" placeholder="Short student-facing directions" value="${esc(x.instructions||instructionsFor(x.activity))}"></label><label class="wide">Link<input class="u" placeholder="Paste Google Doc / Slides / website URL" value="${esc(x.link)}"></label><button class="rm">Remove</button>`;r.querySelector('.s').oninput=z=>{x.start=z.target.value;save();list();update()};r.querySelector('.e').oninput=z=>{x.end=z.target.value;save();list();update()};r.querySelector('.a').oninput=z=>{x.activity=z.target.value;save();list();update()};r.querySelector('.ins').oninput=z=>{x.instructions=z.target.value;save();list();update()};r.querySelector('.u').oninput=z=>{x.link=z.target.value.trim();save();list();update()};r.querySelector('.rm').onclick=()=>{I().splice(i,1);save();edit();list();update()};editRows.appendChild(r)})}
 function all(){tabs();list();edit();update()}function tone(){if(!audioReady)return;const Ctx=window.AudioContext||window.webkitAudioContext,c=new Ctx();[659,784,988].forEach((q,i)=>{let o=c.createOscillator(),g=c.createGain();o.frequency.value=q;g.gain.setValueAtTime(.001,c.currentTime+i*.18);g.gain.exponentialRampToValueAtTime(.2,c.currentTime+i*.18+.02);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+i*.18+.16);o.connect(g);g.connect(c.destination);o.start(c.currentTime+i*.18);o.stop(c.currentTime+i*.18+.18)})}
 function update(){const d=new Date(),n=d.getHours()*60+d.getMinutes()+d.getSeconds()/60,s=I();clock.textContent=d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit',second:'2-digit'});const ai=s.findIndex(x=>n>=m(x.start)&&n<m(x.end));document.querySelectorAll('.row').forEach((r,i)=>r.classList.toggle('live',i===ai));currentLinkArea.innerHTML='';if(ai>=0){const x=s[ai],st=m(x.start),en=m(x.end),sec=Math.max(0,Math.round((en-n)*60));countdown.textContent=`${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`;status.textContent='In progress';current.textContent=x.activity;currentRange.textContent=`${f(x.start)}–${f(x.end)}`;currentInstructions.textContent=x.instructions||instructionsFor(x.activity);bar.style.width=Math.max(0,Math.min(100,(n-st)/(en-st)*100))+'%';currentLinkArea.innerHTML=link(x.link,'Open Current Activity');const nx=s[ai+1];next.textContent=nx?nx.activity:'End of scheduled activities';nextRange.textContent=nx?`${f(nx.start)}–${f(nx.end)}`:'—';if(last!==null&&ai!==last&&audioReady)tone();last=ai;return}countdown.textContent='--:--';bar.style.width='0%';if(!s.length){status.textContent='No schedule';current.textContent='Add activities';return}if(n<m(s[0].start)){status.textContent='Before school';current.textContent='Get Ready for the Day';currentRange.textContent=`First activity begins at ${f(s[0].start)}`;currentInstructions.textContent='Complete your arrival routine and be ready for the first scheduled activity.';next.textContent=s[0].activity;nextRange.textContent=`${f(s[0].start)}–${f(s[0].end)}`}else if(n>=m(s[s.length-1].end)){status.textContent='Complete';current.textContent='Daily Schedule Complete';currentRange.textContent='Great work today.';currentInstructions.textContent='Make sure your area is clean, materials are returned, and devices are plugged in.';next.textContent='—';nextRange.textContent='—'}else{const nx=s.find(x=>m(x.start)>n);status.textContent='Transition';current.textContent='Transition Time';currentRange.textContent=nx?`Next activity begins at ${f(nx.start)}`:'';currentInstructions.textContent='Finish the current step → clean up → move to the next activity when directed.';next.textContent=nx?nx.activity:'—';nextRange.textContent=nx?`${f(nx.start)}–${f(nx.end)}`:'—'}}
 
